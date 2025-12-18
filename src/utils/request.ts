@@ -1,76 +1,65 @@
 import axios, {
   AxiosError,
+  AxiosInstance,
   AxiosResponse,
-  InternalAxiosRequestConfig
-} from 'axios'
-import { Modal } from 'antd'
-import Router from 'next/router'
-import { getToken, removeToken } from '@/utils/storage'
-import { TOKEN_HEADER_KEY } from './constants'
+  InternalAxiosRequestConfig,
+} from "axios";
+import { Modal } from "antd";
+import { getToken, removeToken } from "../modules/Auth/utils/auth";
+import * as constants from "./constants";
 
-const AUTH_ERROR_CODE = 401
-const AUTH_EXPIRED_MESSAGE = 'Hết phiên đăng nhập'
+const service: AxiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_BASE_API,
+  timeout: 600000,
+});
 
-// Create Axios instance
-const service = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
-  timeout: 600000
-})
-//console.log('url', process.env.NEXT_PUBLIC_API_BASE_URL );
-
-// ✅ Request interceptor
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = getToken()
+    const token = getToken();
 
-    if (token && config.headers) {
-      config.headers[TOKEN_HEADER_KEY] = `Bearer ${token}`
+    if (token) {
+      config.headers[constants.TOKEN_HEADER_KEY] = `Bearer ${token}`;
     }
 
-    if (config.headers && !config.headers['Content-Type']) {
-      config.headers['Content-Type'] = 'application/json'
+    const isFormData = config.data instanceof FormData;
+    if (!isFormData) {
+      config.headers["Content-Type"] = "application/json";
     }
 
-    return config
+    return config;
   },
-  (error: AxiosError) => {
-    console.error('[Request Error]', error)
-    return Promise.reject(error)
-  }
-)
+  (error: AxiosError) => Promise.reject(error)
+);
 
-// ✅ Response interceptor
 service.interceptors.response.use(
   (response: AxiosResponse) => {
-    const { data } = response
-    const statusCode = data?.statusCode
+    const { statusCode } = response.data || {};
 
-    if (statusCode === AUTH_ERROR_CODE) {
-      handleAuthExpired()
+    if (statusCode === 401) {
+      handleUnauthorized();
     }
 
-    return data
+    return response.data;
   },
   (error: AxiosError) => {
-    const status = error?.response?.status
-
-    if (status === AUTH_ERROR_CODE) {
-      handleAuthExpired()
+    if (error.response?.status === 401) {
+      handleUnauthorized();
     }
-
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
-)
+);
 
-function handleAuthExpired() {
-  Modal.warning({
-    title: 'Thông báo',
-    content: AUTH_EXPIRED_MESSAGE,
+function handleUnauthorized(): void {
+  Modal.confirm({
+    title: "Session Ended",
+    content: "Your session has expired. Please login again.",
+    okText: "Ok",
+    cancelText: "Cancel",
     onOk: () => {
-      removeToken()
-      Router.replace('/login')
-    }
-  })
+      removeToken();
+      window.location.reload();
+    },
+  });
 }
 
-export default service
+export default service;
