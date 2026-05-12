@@ -1,14 +1,40 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { EyeOutlined, EyeInvisibleOutlined, LeftOutlined} from '@ant-design/icons';
-import { Button, Checkbox, Form, Input } from "antd";
+import { Button, Checkbox, Form, Input, message } from "antd";
+import {useLogin} from '../hooks/useLogin'
+import { setToken } from "../../../utils/auth";
+import { useTranslation } from "react-i18next";
+import { LoginData } from "../types";
 
 export default function SignInForm() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { handleLogin, isSubmitting } = useLogin();
+
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   // Hàm xử lý khi submit thành công
-  const onFinish = (values: any) => {
+  const onFinish = async (values: any) => {
     console.log('Dữ liệu nhận được:', values);
+    try {
+      const res = await handleLogin(values)
+      if(res.statusCode == 200){
+        const loginData = res.data as LoginData
+        setToken(loginData.token)
+        navigate('/')
+      }else{
+        console.log(res);
+        
+        const errorKey = typeof res.data === 'string' ? res.data : 'UNKNOWN_ERROR';
+        // message.error(t(`api.${res.data}`))
+        message.error(errorKey)
+        
+      }
+
+    } catch (error) {
+      
+    }
   };
 
   // Hàm xử lý khi submit thất bại (lỗi validation)
@@ -54,7 +80,7 @@ export default function SignInForm() {
 
               <Form.Item
                 label="Mật khẩu"
-                name="passwprd"
+                name="password"
                 rules={[{required: true, message: "Vui lòng nhập mật khẩu"}]}
               >
                 <Input placeholder="Mật khẩu" size="large" />
@@ -65,7 +91,12 @@ export default function SignInForm() {
               </Form.Item>
 
               <Form.Item>
-                <Button className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                <Button
+                  type="primary"
+                  size="large"
+                  loading={isSubmitting}
+                  htmlType="submit"
+                  className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
                   Đăng nhập
                 </Button>
               </Form.Item>

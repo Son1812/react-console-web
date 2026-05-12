@@ -5,7 +5,7 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 import { Modal } from "antd";
-import { getToken, removeToken } from "../modules/Auth/utils/auth";
+import { getToken, removeToken } from "./auth";
 import * as constants from "./constants";
 
 const service: AxiosInstance = axios.create({

@@ -1,4 +1,4 @@
-export const PREFIX = 'nod'
+export const PREFIX = 'chatbot'
 // export const TOKEN_KEY = `${PREFIX}-token`;
 
 export const TOKEN_KEY = PREFIX + '-token'

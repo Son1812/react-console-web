@@ -1,5 +1,5 @@
 import Cookies from "js-cookie";
-import * as constants from "./constants";
+import * as constants from "./constants-auth";
 import {jwtDecode} from "jwt-decode";
 
 /**
@@ -11,12 +11,7 @@ const isLocal = window.location.hostname === "localhost";
  * Set Access Token
  */
 export function setToken(token: string): void {
-  Cookies.set(constants.TOKEN_KEY, token, {
-    domain: isLocal ? undefined : ".nfin.pro",
-    path: "/",
-    secure: !isLocal,
-    sameSite: isLocal ? "Lax" : "None",
-  });
+  Cookies.set(constants.TOKEN_KEY, token);
 }
 /**
  * Get Access Token
@@ -34,12 +29,7 @@ export function getRefreshToken(): string | undefined {
  * Set Refresh Token
  */
 export function setRefreshToken(token: string): void {
-  Cookies.set(constants.RF_TOKEN_KEY, token, {
-    domain: isLocal ? undefined : ".nfin.pro",
-    path: "/",
-    secure: !isLocal,
-    sameSite: isLocal ? "Lax" : "None",
-  });
+  Cookies.set(constants.RF_TOKEN_KEY, token);
 }
 /**
  * Remove all auth cookies
@@ -47,10 +37,6 @@ export function setRefreshToken(token: string): void {
 export function removeToken(): void {
   Cookies.remove(constants.RF_TOKEN_KEY);
   Cookies.remove(constants.TOKEN_KEY);
-  Cookies.remove(constants.TOKEN_KEY, {
-    domain: ".nfin.pro",
-    path: "/",
-  });
   Cookies.remove(constants.USER_NAME);
   Cookies.remove(constants.USER_ID);
 }
