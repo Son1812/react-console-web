@@ -34,7 +34,7 @@ export function setRefreshToken(token: string): void {
 /**
  * Remove all auth cookies
  */
-export function removeToken(): void {
+export function removeToken(): void {  
   Cookies.remove(constants.RF_TOKEN_KEY);
   Cookies.remove(constants.TOKEN_KEY);
   Cookies.remove(constants.USER_NAME);

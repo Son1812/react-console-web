@@ -19,17 +19,13 @@ export default function SignInForm() {
     console.log('Dữ liệu nhận được:', values);
     try {
       const res = await handleLogin(values)
+      
       if(res.statusCode == 200){
         const loginData = res.data as LoginData
         setToken(loginData.token)
         navigate('/')
-      }else{
-        console.log(res);
-        
-        const errorKey = typeof res.data === 'string' ? res.data : 'UNKNOWN_ERROR';
-        // message.error(t(`api.${res.data}`))
-        message.error(errorKey)
-        
+      }else{        
+        message.error(t(`api.${res.data}`))
       }
 
     } catch (error) {

@@ -1,5 +1,7 @@
 {
   "api": {
-    "USER_NOT_FOUND_ERROR":"Tài khoản không chính xác"
+    "USER_NOT_FOUND_ERROR":"Tài khoản không chính xác",
+    "AUTHENTICATION_ERROR": "Tài khoản hoặc mật khẩu không chính xác",
+    "INVALID_TOKEN_ERROR": "Lỗi xác thực"
   }
 }

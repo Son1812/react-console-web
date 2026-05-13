@@ -8,8 +8,8 @@ export const useLogin  = () => {
   const handleLogin = async (values: LoginPayload): Promise<LoginResponse> => {
     setIsSubmitting(true);
     try {
-      const res = await loginService(values);
-      return res.data;
+      const res = await loginService(values);      
+      return res;
     } catch (error) {
       // Bạn nên throw error để Component có thể bắt được trong khối catch của nó
       throw error;
