@@ -116,38 +116,39 @@ export function getUserId(): string | undefined {
 /**
  * Get save data login
  */
-export function setSavePassword(save:string){
-  return localStorage.get(constants.SAVE_LOGIN, save);
+export const setSavePassword = (save:boolean) => {
+  localStorage.setItem(constants.SAVE_LOGIN, JSON.stringify(save));
 }
 /**
  * Get save data login
  */
-export function getSavePassword(): string | undefined {
-  return localStorage.get(constants.SAVE_LOGIN);
+export const getSavePassword = (): boolean => {
+  return JSON.parse(localStorage.getItem(constants.SAVE_LOGIN) || 'false');
 }
 /**
  * Set user login
  */
-export function setUserNameLogin(username:string){
-  return localStorage.get(constants.USER_LOGIN, username);
+export const setUserNameLogin = (username:string) => {
+  localStorage.setItem(constants.USER_LOGIN, username);
 }
 /**
  * Get user login
  */
-export function getUserNameLogin(): string | undefined {
-  return localStorage.get(constants.USER_LOGIN);
+export const getUserNameLogin = (): string => {
+  return localStorage.getItem(constants.USER_LOGIN) || '';
 }
 /**
  * Set password login
  */
-export function setPasswordLogin(password:string){
-  return localStorage.get(constants.PASS_LOGIN, password);
+export const setPasswordLogin = (password:string) =>{
+  localStorage.setItem(constants.PASS_LOGIN, password);
+  
 }
 /**
  * Get password login
  */
-export function getPasswordLogin(): string | undefined {
-  return localStorage.get(constants.PASS_LOGIN);
+export const getPasswordLogin = (): string =>{
+  return localStorage.getItem(constants.PASS_LOGIN) || '';
 }
 /**
  * Set userId

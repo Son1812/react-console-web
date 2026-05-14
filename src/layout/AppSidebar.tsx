@@ -8,14 +8,13 @@ import {
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
-  ListIcon,
   PageIcon,
   PieChartIcon,
   PlugInIcon,
   TableIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
-import SidebarWidget from "./SidebarWidget";
+import { SettingOutlined } from "@ant-design/icons";
 
 type NavItem = {
   name: string;
@@ -42,9 +41,14 @@ const navItems: NavItem[] = [
     path: "/profile",
   },
   {
-    name: "Forms",
-    icon: <ListIcon />,
-    subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
+    name: "Cấu hình",
+    icon: <SettingOutlined />,
+    subItems: [
+      { name: "Ý định", path: "/y-dinh", pro: false },
+      { name: "Câu trả lời", path: "/form-elements", pro: false },
+      { name: "Quy tắc", path: "/form-elements", pro: false }
+    
+    ],
   },
   {
     name: "Tables",
@@ -368,7 +372,6 @@ const AppSidebar: React.FC = () => {
             </div>
           </div>
         </nav>
-        {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
       </div>
     </aside>
   );

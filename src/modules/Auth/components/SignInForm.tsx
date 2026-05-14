@@ -1,28 +1,42 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { EyeOutlined, EyeInvisibleOutlined, LeftOutlined} from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, message } from "antd";
 import {useLogin} from '../hooks/useLogin'
-import { setToken } from "../../../utils/auth";
+import { getPasswordLogin, getSavePassword, getUserNameLogin, setToken } from "../../../utils/auth";
 import { useTranslation } from "react-i18next";
 import { LoginData } from "../types";
 
 export default function SignInForm() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { handleLogin, isSubmitting } = useLogin();
+  const { handleLogin, isSubmitting, saveLogin } = useLogin();
 
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    const isRemember = getSavePassword();
+    if (isRemember) {
+      form.setFieldsValue({
+        username: getUserNameLogin(),
+        password: getPasswordLogin(),
+        remember: true
+      });
+    }
+  }, []);
+
   // Hàm xử lý khi submit thành công
   const onFinish = async (values: any) => {
-    console.log('Dữ liệu nhận được:', values);
     try {
+      saveLogin(values);
       const res = await handleLogin(values)
       
       if(res.statusCode == 200){
         const loginData = res.data as LoginData
-        setToken(loginData.token)
+        setToken(loginData.accessToken)
         navigate('/')
       }else{        
         message.error(t(`api.${res.data}`))
@@ -61,6 +75,7 @@ export default function SignInForm() {
           <div>
             <Form
               name="fomrData"
+              form={form}
               initialValues={{ remember: true }}
               onFinish={onFinish}
               onFinishFailed={onFinishFailed}
@@ -77,9 +92,10 @@ export default function SignInForm() {
               <Form.Item
                 label="Mật khẩu"
                 name="password"
+                
                 rules={[{required: true, message: "Vui lòng nhập mật khẩu"}]}
               >
-                <Input placeholder="Mật khẩu" size="large" />
+                <Input.Password placeholder="Mật khẩu" size="large" />
               </Form.Item>
 
               <Form.Item name="remember" valuePropName="checked">
