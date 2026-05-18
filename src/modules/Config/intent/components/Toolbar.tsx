@@ -1,86 +1,111 @@
-// src/modules/config/intent/components/Toolbar.tsx
 import React from 'react';
-import { Form, Input, Select, Button, Row, Col, Space, Card } from 'antd';
+import { Form, Input, Select, Button, Space, Card } from 'antd';
 import { SearchOutlined, ReloadOutlined, PlusOutlined } from '@ant-design/icons';
 
-interface ToolbarProps {
-  onSearch: (values: any) => void;
-  onAdd: () => void;
+// Định nghĩa Interface dữ liệu nhận từ Form của Toolbar
+interface ToolbarFormValues {
+  keyword?: string;
+  status?: 'active' | 'inactive' | 'all';
+  language?: string;
 }
 
-const Toolbar: React.FC<ToolbarProps> = ({ onSearch, onAdd }) => {
-  const [form] = Form.useForm();
+interface ToolbarProps {
+  onSearch: (values: ToolbarFormValues) => void;
+  onAdd: () => void;
+  loading?: boolean;
+}
 
+const Toolbar: React.FC<ToolbarProps> = ({ onSearch, onAdd, loading = false }) => {
+  const [form] = Form.useForm<ToolbarFormValues>();
+
+  // Xử lý khi người dùng nhấn nút Tìm kiếm hoặc nhấn Enter
+  const handleSubmit = (values: ToolbarFormValues) => {
+    onSearch(values);
+  };
+
+  // Xử lý khi người dùng nhấn nút Làm mới (Reset)
   const handleReset = () => {
     form.resetFields();
-    onSearch(form.getFieldsValue());
+    // Gọi onSearch với dữ liệu trống để table tải lại danh sách mặc định
+    onSearch({
+      keyword: undefined,
+      status: 'all',
+      language: 'vi',
+    });
   };
 
   return (
-    <Card style={{ marginBottom: 16 }}>
+    <Card size="small" style={{ marginBottom: '16px', background: '#fafafa' }}>
       <Form
         form={form}
-        onFinish={onSearch}
-        layout="vertical"
+        layout="inline"
+        onFinish={handleSubmit}
+        initialValues={{
+          status: 'all',
+          language: 'vi', // Khớp với giá trị mặc định trong Hook của bạn
+        }}
+        style={{ width: '100%', justifyContent: 'space-between', gap: '16px 8px' }}
       >
-        <Row gutter={[16, 8]} align="bottom">
-          {/* Search theo từ khóa */}
-          <Col xs={24} sm={12} md={6}>
-            <Form.Item name="keyword" label="Tìm kiếm ý tưởng">
-              <Input placeholder="Nhập tên ý tưởng..." allowClear />
-            </Form.Item>
-          </Col>
+        {/* Khối bên trái: Các ô tìm kiếm */}
+        <Space wrap style={{ flex: 1 }}>
+          <Form.Item name="keyword">
+            <Input
+              placeholder="Nhập mã hoặc tên ý tưởng..."
+              allowClear
+              style={{ width: 240 }}
+              disabled={loading}
+              prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
+            />
+          </Form.Item>
 
-          {/* Filter theo Ngôn ngữ */}
-          <Col xs={12} sm={6} md={4}>
-            <Form.Item name="language" label="Ngôn ngữ">
-              <Select placeholder="Tất cả" allowClear>
-                <Select.Option value="vi">Tiếng Việt</Select.Option>
-                <Select.Option value="en">Tiếng Anh</Select.Option>
-              </Select>
-            </Form.Item>
-          </Col>
+          <Form.Item name="language">
+            <Select style={{ width: 140 }} disabled={loading}>
+              <Select.Option value="vi">Tiếng Việt</Select.Option>
+              <Select.Option value="en">Tiếng Anh</Select.Option>
+            </Select>
+          </Form.Item>
 
-          {/* Filter theo Trạng thái */}
-          <Col xs={12} sm={6} md={4}>
-            <Form.Item name="status" label="Trạng thái">
-              <Select placeholder="Tất cả" allowClear>
-                <Select.Option value="active">Hoạt động</Select.Option>
-                <Select.Option value="inactive">Ngừng hoạt động</Select.Option>
-              </Select>
-            </Form.Item>
-          </Col>
+          <Form.Item name="status">
+            <Select style={{ width: 160 }} disabled={loading}>
+              <Select.Option value="all">Tất cả trạng thái</Select.Option>
+              <Select.Option value="active">Hoạt động</Select.Option>
+              <Select.Option value="inactive">Đang khóa</Select.Option>
+            </Select>
+          </Form.Item>
 
-          {/* Nhóm nút chức năng */}
-          <Col xs={24} md={10} style={{ textAlign: 'right' }}>
-            <Form.Item>
-              <Space wrap>
-                <Button 
-                  type="primary" 
-                  htmlType="submit" 
-                  icon={<SearchOutlined />}
-                >
-                  Tìm kiếm
-                </Button>
-                <Button 
-                  icon={<ReloadOutlined />} 
-                  onClick={handleReset}
-                >
-                  Làm mới
-                </Button>
-                <Button 
-                  type="primary" 
-                  variant="dashed"
-                  color="primary"
-                  icon={<PlusOutlined />} 
-                  onClick={onAdd}
-                >
-                  Thêm mới
-                </Button>
-              </Space>
-            </Form.Item>
-          </Col>
-        </Row>
+          <Form.Item>
+            <Space>
+              <Button
+                type="primary"
+                htmlType="submit"
+                icon={<SearchOutlined />}
+                loading={loading}
+              >
+                Tìm kiếm
+              </Button>
+              <Button
+                icon={<ReloadOutlined />}
+                onClick={handleReset}
+                disabled={loading}
+              >
+                Đặt lại
+              </Button>
+            </Space>
+          </Form.Item>
+        </Space>
+
+        {/* Khối bên phải: Nút Thêm mới hành động */}
+        <Form.Item style={{ marginRight: 0 }}>
+          <Button
+            type="primary"
+            style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }} // Màu xanh lá cây đặc trưng cho nút thêm mới
+            icon={<PlusOutlined />}
+            onClick={onAdd}
+            disabled={loading}
+          >
+            Thêm ý tưởng
+          </Button>
+        </Form.Item>
       </Form>
     </Card>
   );

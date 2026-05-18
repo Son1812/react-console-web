@@ -2,20 +2,17 @@ import { useState } from "react";
 import { loginService } from "../services";
 import { LoginPayload, LoginResponse } from "../types";
 import { setPasswordLogin, setSavePassword, setUserNameLogin } from "../../../utils/auth";
+import { message } from "antd";
 
 export const useLogin  = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const saveLogin = (values: LoginPayload) =>{
-    console.log('save', values);
-    
+  const saveLogin = (values: LoginPayload) =>{    
     if(values.remember){
-      console.log('true', values);
       setSavePassword(true)
       setUserNameLogin(values.username)
       setPasswordLogin(values.password)
     }else{
-      console.log('false', values);
       setSavePassword(false)
       setUserNameLogin('')
       setPasswordLogin('')
@@ -25,10 +22,13 @@ export const useLogin  = () => {
   const handleLogin = async (values: LoginPayload): Promise<LoginResponse> => {
     setIsSubmitting(true);
     try {
-      const res = await loginService(values);      
+      const res = await loginService(values);
+      console.log('hook',res);
+      
       return res;
     } catch (error) {
       // Bạn nên throw error để Component có thể bắt được trong khối catch của nó
+      message.error("Có lỗi xảy ra")
       throw error;
     } finally {
       setIsSubmitting(false);

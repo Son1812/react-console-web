@@ -33,13 +33,17 @@ export default function SignInForm() {
     try {
       saveLogin(values);
       const res = await handleLogin(values)
+      console.log('sign',res);
       
       if(res.statusCode == 200){
-        const loginData = res.data as LoginData
-        setToken(loginData.accessToken)
+        console.log('200',res);
+        setToken(res.data.accessToken)
         navigate('/')
-      }else{        
-        message.error(t(`api.${res.data}`))
+      }else{
+        console.log('400');
+        
+        // message.error(t(`api.${res.data}`))
+        message.error(res.message)
       }
 
     } catch (error) {

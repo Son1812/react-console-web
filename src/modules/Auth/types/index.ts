@@ -13,5 +13,5 @@ export interface LoginData {
 export interface LoginResponse {
   statusCode: number;
   message: string;
-  data: LoginData | string;
+  data: LoginData
 }
